@@ -5659,7 +5659,7 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType )
 	if ( Weapon_OwnsThisType(pszName, iSubType) )
 		return NULL;
 
-	// Msg( "giving %s\n", pszName );
+	Msg( "giving %s\n", pszName );
 
 	EHANDLE pent;
 
@@ -6162,6 +6162,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_rpg" );
 		GiveNamedItem( "weapon_357" );
 		GiveNamedItem( "weapon_crossbow" );
+		GiveNamedItem( "weapon_camera" );
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
 #endif

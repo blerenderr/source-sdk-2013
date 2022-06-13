@@ -346,6 +346,41 @@ public:
 };
 LINK_ENTITY_TO_CLASS(item_ammo_crossbow, CItem_BoxXBowRounds);
 
+// ========================================================================
+//	>> CItem_CameraRounds
+// ========================================================================
+class CItem_CameraRounds : public CItem
+{
+public:
+	DECLARE_CLASS(CItem_CameraRounds, CItem);
+
+	void Precache(void)
+	{
+		PrecacheModel("models/items/crossbowrounds.mdl");
+	}
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/items/crossbowrounds.mdl");
+		BaseClass::Spawn();
+	}
+
+	bool MyTouch(CBasePlayer* pPlayer)
+	{
+		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_CAMERA, "CameraTape"))
+		{
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
+			{
+				UTIL_Remove(this);
+			}
+			return true;
+		}
+		return false;
+	}
+};
+LINK_ENTITY_TO_CLASS(item_ammo_camera, CItem_CameraRounds);
+
 
 // ========================================================================
 //	>> FlareRound
