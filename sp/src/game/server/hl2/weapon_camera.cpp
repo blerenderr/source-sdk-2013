@@ -707,7 +707,7 @@ bool CWeaponCamera::Deploy( void )
 {
 	if ( m_iClip1 <= 0 )
 	{
-		return DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), ACT_CAMERA_DRAW_UNLOADED, (char*)GetAnimPrefix() );
+		return DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), ACT_CROSSBOW_DRAW_UNLOADED, (char*)GetAnimPrefix() );
 	}
 
 	SetSkin( BOLT_SKIN_GLOW );
