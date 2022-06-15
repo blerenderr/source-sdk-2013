@@ -1,7 +1,7 @@
 "GameInfo"
 {
 	game 		"Photons"
-	title 		"AV"
+	title 		"Av"
 	title2		""
 	supportsvr	1
 
@@ -40,6 +40,9 @@
 			game+mod			ep2/custom/*
 			game+mod			episodic/custom/*
 			game+mod			hl2/custom/*
+			
+			// Also mount the mod's custom folder
+			game+mod			|gameinfo_path|custom/*
 
 			// Now search loose files.  We'll set the directory containing the gameinfo.txt file
 			// as the first "mod" search path (after any user customizations).  This is also the one
