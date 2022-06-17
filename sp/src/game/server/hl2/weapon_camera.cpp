@@ -32,7 +32,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-//#define BOLT_MODEL			"models/camera_bolt.mdl"
+//#define BOLT_MODEL			"models/camera_tape.mdl"
 #define BOLT_MODEL	"models/weapons/w_missile_closed.mdl"
 
 #define BOLT_AIR_VELOCITY	2500
@@ -41,7 +41,7 @@
 extern ConVar sk_plr_dmg_camera;
 extern ConVar sk_npc_dmg_camera;
 
-void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, const Vector *origin );
+void TE_StickyTape( IRecipientFilter& filter, float delay,	Vector vecDirection, const Vector *origin );
 
 #define	BOLT_SKIN_NORMAL	0
 #define BOLT_SKIN_GLOW		1
@@ -49,13 +49,13 @@ void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, 
 //-----------------------------------------------------------------------------
 // Camera Bolt
 //-----------------------------------------------------------------------------
-class CCameraBolt : public CBaseCombatCharacter
+class CCameraTape : public CBaseCombatCharacter
 {
-	DECLARE_CLASS( CCameraBolt, CBaseCombatCharacter );
+	DECLARE_CLASS( CCameraTape, CBaseCombatCharacter );
 
 public:
-	CCameraBolt() { };
-	~CCameraBolt();
+	CCameraTape() { };
+	~CCameraTape();
 
 	Class_T Classify( void ) { return CLASS_NONE; }
 
@@ -63,10 +63,10 @@ public:
 	void Spawn( void );
 	void Precache( void );
 	void BubbleThink( void );
-	void BoltTouch( CBaseEntity *pOther );
+	void TapeTouch( CBaseEntity *pOther );
 	bool CreateVPhysics( void );
 	unsigned int PhysicsSolidMaskForEntity() const;
-	static CCameraBolt *BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner = NULL );
+	static CCameraTape *TapeCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner = NULL );
 
 protected:
 
@@ -78,12 +78,12 @@ protected:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 };
-LINK_ENTITY_TO_CLASS( camera_bolt, CCameraBolt );
+LINK_ENTITY_TO_CLASS( camera_tape, CCameraTape );
 
-BEGIN_DATADESC( CCameraBolt )
+BEGIN_DATADESC( CCameraTape )
 	// Function Pointers
 	DEFINE_FUNCTION( BubbleThink ),
-	DEFINE_FUNCTION( BoltTouch ),
+	DEFINE_FUNCTION( TapeTouch ),
 
 	// These are recreated on reload, they don't need storage
 	DEFINE_FIELD( m_pGlowSprite, FIELD_EHANDLE ),
@@ -91,25 +91,25 @@ BEGIN_DATADESC( CCameraBolt )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CCameraBolt, DT_CameraBolt )
+IMPLEMENT_SERVERCLASS_ST( CCameraTape, DT_CameraTape )
 END_SEND_TABLE()
 
-CCameraBolt *CCameraBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner )
+CCameraTape *CCameraTape::TapeCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner )
 {
-	// Create a new entity with CCameraBolt private data
-	CCameraBolt *pBolt = (CCameraBolt *)CreateEntityByName( "camera_bolt" );
-	UTIL_SetOrigin( pBolt, vecOrigin );
-	pBolt->SetAbsAngles( angAngles );
-	pBolt->Spawn();
-	pBolt->SetOwnerEntity( pentOwner );
+	// Create a new entity with CCameraTape private data
+	CCameraTape *pTape = (CCameraTape *)CreateEntityByName( "camera_tape" );
+	UTIL_SetOrigin( pTape, vecOrigin );
+	pTape->SetAbsAngles( angAngles );
+	pTape->Spawn();
+	pTape->SetOwnerEntity( pentOwner );
 
-	return pBolt;
+	return pTape;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-CCameraBolt::~CCameraBolt( void )
+CCameraTape::~CCameraTape( void )
 {
 	if ( m_pGlowSprite )
 	{
@@ -121,7 +121,7 @@ CCameraBolt::~CCameraBolt( void )
 // Purpose: 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CCameraBolt::CreateVPhysics( void )
+bool CCameraTape::CreateVPhysics( void )
 {
 	// Create the object in the physics system
 	VPhysicsInitNormal( SOLID_BBOX, FSOLID_NOT_STANDABLE, false );
@@ -131,7 +131,7 @@ bool CCameraBolt::CreateVPhysics( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-unsigned int CCameraBolt::PhysicsSolidMaskForEntity() const
+unsigned int CCameraTape::PhysicsSolidMaskForEntity() const
 {
 	return ( BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX ) & ~CONTENTS_GRATE;
 }
@@ -140,7 +140,7 @@ unsigned int CCameraBolt::PhysicsSolidMaskForEntity() const
 // Purpose: 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CCameraBolt::CreateSprites( void )
+bool CCameraTape::CreateSprites( void )
 {
 	// Start up the eye glow
 	m_pGlowSprite = CSprite::SpriteCreate( "sprites/light_glow02_noz.vmt", GetLocalOrigin(), false );
@@ -159,11 +159,11 @@ bool CCameraBolt::CreateSprites( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CCameraBolt::Spawn( void )
+void CCameraTape::Spawn( void )
 {
 	Precache( );
 
-	SetModel( "models/camera_bolt.mdl" );
+	SetModel( "models/crossbow_bolt.mdl" ); //change later!!
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
 	UTIL_SetSize( this, -Vector(0.3f,0.3f,0.3f), Vector(0.3f,0.3f,0.3f) );
 	SetSolid( SOLID_BBOX );
@@ -172,9 +172,9 @@ void CCameraBolt::Spawn( void )
 	// Make sure we're updated if we're underwater
 	UpdateWaterState();
 
-	SetTouch( &CCameraBolt::BoltTouch );
+	SetTouch( &CCameraTape::TapeTouch );
 
-	SetThink( &CCameraBolt::BubbleThink );
+	SetThink( &CCameraTape::BubbleThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
 	
 	CreateSprites();
@@ -184,19 +184,19 @@ void CCameraBolt::Spawn( void )
 }
 
 
-void CCameraBolt::Precache( void )
+void CCameraTape::Precache( void )
 {
 	PrecacheModel( BOLT_MODEL );
 
 	// This is used by C_TEStickyBolt, despte being different from above!!!
-	PrecacheModel( "models/camera_bolt.mdl" );
+	PrecacheModel( "models/crossbow_bolt.mdl" ); //yup
 
 	PrecacheModel( "sprites/light_glow02_noz.vmt" );
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCameraBolt::BoltTouch( CBaseEntity *pOther )
+void CCameraTape::TapeTouch( CBaseEntity *pOther )
 {
 	if ( pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER) )
 	{
@@ -268,7 +268,7 @@ void CCameraBolt::BoltTouch( CBaseEntity *pOther )
 		SetAbsVelocity( Vector( 0, 0, 0 ) );
 
 		// play body "thwack" sound
-		EmitSound( "Weapon_Camera.BoltHitBody" );
+		EmitSound( "Weapon_Crossbow.BoltHitBody" ); //also gonna have to do sound effects at some point
 
 		Vector vForward;
 
@@ -310,7 +310,7 @@ void CCameraBolt::BoltTouch( CBaseEntity *pOther )
 		// See if we struck the world
 		if ( pOther->GetMoveType() == MOVETYPE_NONE && !( tr.surface.flags & SURF_SKY ) )
 		{
-			EmitSound( "Weapon_Camera.BoltHitWorld" );
+			EmitSound( "Weapon_Crossbow.BoltHitWorld" );
 
 			// if what we hit is static architecture, can stay around for a while.
 			Vector vecDir = GetAbsVelocity();
@@ -336,7 +336,7 @@ void CCameraBolt::BoltTouch( CBaseEntity *pOther )
 			}
 			else
 			{
-				SetThink( &CCameraBolt::SUB_Remove );
+				SetThink( &CCameraTape::SUB_Remove );
 				SetNextThink( gpGlobals->curtime + 2.0f );
 				
 				//FIXME: We actually want to stick (with hierarchy) to what we've hit
@@ -359,7 +359,7 @@ void CCameraBolt::BoltTouch( CBaseEntity *pOther )
 
 				AddEffects( EF_NODRAW );
 				SetTouch( NULL );
-				SetThink( &CCameraBolt::SUB_Remove );
+				SetThink( &CCameraTape::SUB_Remove );
 				SetNextThink( gpGlobals->curtime + 2.0f );
 
 				if ( m_pGlowSprite != NULL )
@@ -389,7 +389,7 @@ void CCameraBolt::BoltTouch( CBaseEntity *pOther )
 
 	if ( g_pGameRules->IsMultiplayer() )
 	{
-//		SetThink( &CCameraBolt::ExplodeThink );
+//		SetThink( &CCameraTape::ExplodeThink );
 //		SetNextThink( gpGlobals->curtime + 0.1f );
 	}
 }
@@ -397,7 +397,7 @@ void CCameraBolt::BoltTouch( CBaseEntity *pOther )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CCameraBolt::BubbleThink( void )
+void CCameraTape::BubbleThink( void )
 {
 	QAngle angNewAngles;
 
@@ -451,7 +451,7 @@ private:
 	void	StopEffects( void );
 	void	SetSkin( int skinNum );
 	void	CheckZoomToggle( void );
-	void	FireBolt( void );
+	void	FireTape( void );
 	void	ToggleZoom( void );
 	
 	// Various states for the camera's charger
@@ -514,11 +514,11 @@ CWeaponCamera::CWeaponCamera( void )
 //-----------------------------------------------------------------------------
 void CWeaponCamera::Precache( void )
 {
-	UTIL_PrecacheOther( "camera_bolt" );
+	UTIL_PrecacheOther( "camera_tape" );
 
-	PrecacheScriptSound( "Weapon_Camera.BoltHitBody" );
-	PrecacheScriptSound( "Weapon_Camera.BoltHitWorld" );
-	PrecacheScriptSound( "Weapon_Camera.BoltSkewer" );
+	PrecacheScriptSound( "Weapon_Crossbow.BoltHitBody" );
+	PrecacheScriptSound( "Weapon_Crossbow.BoltHitWorld" );
+	PrecacheScriptSound( "Weapon_Crossbow.BoltSkewer" );
 
 	PrecacheModel( CAMERA_GLOW_SPRITE );
 	PrecacheModel( CAMERA_GLOW_SPRITE2 );
@@ -534,11 +534,11 @@ void CWeaponCamera::PrimaryAttack( void )
 	if ( m_bInZoom && g_pGameRules->IsMultiplayer() )
 	{
 //		FireSniperBolt();
-		FireBolt();
+		FireTape();
 	}
 	else
 	{
-		FireBolt();
+		FireTape();
 	}
 
 	// Signal a reload
@@ -618,7 +618,7 @@ void CWeaponCamera::ItemPostFrame( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CWeaponCamera::FireBolt( void )
+void CWeaponCamera::FireTape( void )
 {
 	if ( m_iClip1 <= 0 )
 	{
@@ -649,7 +649,7 @@ void CWeaponCamera::FireBolt( void )
 	VectorAngles( vecAiming, angAiming );
 
 #if defined(HL2_EPISODIC)
-	// !!!HACK - the other piece of the Alyx camera bolt hack for Outland_10 (see ::BoltTouch() for more detail)
+	// !!!HACK - the other piece of the Alyx camera bolt hack for Outland_10 (see ::TapeTouch() for more detail)
 	if( FStrEq(STRING(gpGlobals->mapname), "ep2_outland_10") )
 	{
 		trace_t tr;
@@ -658,22 +658,22 @@ void CWeaponCamera::FireBolt( void )
 		if( tr.m_pEnt != NULL && tr.m_pEnt->Classify() == CLASS_PLAYER_ALLY_VITAL )
 		{
 			// If Alyx is right in front of the player, make sure the bolt starts outside of the player's BBOX, or the bolt
-			// will instantly collide with the player after the owner of the bolt is switched to Alyx in ::BoltTouch(). We 
+			// will instantly collide with the player after the owner of the bolt is switched to Alyx in ::TapeTouch(). We 
 			// avoid this altogether by making it impossible for the bolt to collide with the player.
 			vecSrc += vecAiming * 24.0f;
 		}
 	}
 #endif
 
-	CCameraBolt *pBolt = CCameraBolt::BoltCreate( vecSrc, angAiming, pOwner );
+	CCameraTape *pTape = CCameraTape::TapeCreate( vecSrc, angAiming, pOwner );
 
 	if ( pOwner->GetWaterLevel() == 3 )
 	{
-		pBolt->SetAbsVelocity( vecAiming * BOLT_WATER_VELOCITY );
+		pTape->SetAbsVelocity( vecAiming * BOLT_WATER_VELOCITY );
 	}
 	else
 	{
-		pBolt->SetAbsVelocity( vecAiming * BOLT_AIR_VELOCITY );
+		pTape->SetAbsVelocity( vecAiming * BOLT_AIR_VELOCITY );
 	}
 
 	m_iClip1--;

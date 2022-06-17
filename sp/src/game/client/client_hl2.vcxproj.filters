@@ -3367,6 +3367,9 @@
     <ClCompile Include="toolframework_client.cpp">
       <Filter>Tool Framework</Filter>
     </ClCompile>
+    <ClCompile Include="hl2\c_weapon_camera.cpp">
+      <Filter>Source Files\HL2 DLL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
