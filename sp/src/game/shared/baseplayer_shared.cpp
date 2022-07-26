@@ -152,7 +152,7 @@ float CBasePlayer::GetPlayerMaxSpeed()
 	if ( MaxSpeed() > 0.0f && MaxSpeed() < fMaxSpeed )
 		fMaxSpeed = MaxSpeed();
 
-	return fMaxSpeed;
+	return fMaxSpeed * fMaxSpeed * fMaxSpeed; //lol
 }
 
 //-----------------------------------------------------------------------------

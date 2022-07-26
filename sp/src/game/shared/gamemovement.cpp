@@ -62,7 +62,7 @@ ConVar debug_latch_reset_onduck( "debug_latch_reset_onduck", "1", FCVAR_CHEAT );
 #endif
 
 // [MD] I'll remove this eventually. For now, I want the ability to A/B the optimizations.
-bool g_bMovementOptimizations = true;
+bool g_bMovementOptimizations = false; //usually true
 
 // Roughly how often we want to update the info about the ground surface we're on.
 // We don't need to do this very often.
@@ -1663,7 +1663,7 @@ void CGameMovement::Friction( void )
 	}
 
 	// scale the velocity
-	newspeed = speed - drop;
+	newspeed = speed - drop * 2;
 	if (newspeed < 0)
 		newspeed = 0;
 
@@ -1781,11 +1781,13 @@ void CGameMovement::AirMove( void )
 	//
 	// clamp to server defined max speed
 	//
+	/*
 	if ( wishspeed != 0 && (wishspeed > mv->m_flMaxSpeed))
 	{
 		VectorScale (wishvel, mv->m_flMaxSpeed/wishspeed, wishvel);
 		wishspeed = mv->m_flMaxSpeed;
 	}
+	*/
 	
 	AirAccelerate( wishdir, wishspeed, sv_airaccelerate.GetFloat() );
 
@@ -2403,8 +2405,7 @@ bool CGameMovement::CheckJumpButton( void )
 	if ( player->m_Local.m_bSlowMovement )
 		return false;
 #endif
-
-	if ( mv->m_nOldButtons & IN_JUMP )
+	if (mv->m_nOldButtons & IN_JUMP)
 		return false;		// don't pogo stick
 
 	// Cannot jump will in the unduck transition.
@@ -2434,7 +2435,7 @@ bool CGameMovement::CheckJumpButton( void )
 	{
 #if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
 		Assert( GetCurrentGravity() == 600.0f );
-		flMul = 160.0f;	// approx. 21 units.
+		flMul = 160.0f;	// approx. 21 units. //160.0f
 #else
 		Assert( GetCurrentGravity() == 800.0f );
 		flMul = 268.3281572999747f;
